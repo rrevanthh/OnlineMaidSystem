@@ -7,18 +7,23 @@ import { LoginComponent } from './login/login.component';
 import { MemberlistComponent } from './memberlist/memberlist.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MembercreateComponent } from './membercreate/membercreate.component';
+import { RegisterComponent } from './register/register.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MemberlistComponent,
-    MembercreateComponent
+    MembercreateComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
