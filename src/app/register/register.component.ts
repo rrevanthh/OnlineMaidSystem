@@ -1,7 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ControlContainer, FormBuilder, FormGroup, Validators } from '@angular/forms'
 
 import { mustmatch } from '../helper/mustmatch.validation';
+import { MemberdetailsService } from '../memberdetails.service';
 
 @Component({
   selector: 'app-register',
@@ -10,20 +12,27 @@ import { mustmatch } from '../helper/mustmatch.validation';
 })
 export class RegisterComponent implements OnInit {
 
+  selectedRole="";
   submitted = false;
   registerForm: FormGroup;
   rolesList =["Admin",'Maid','Member','Guest'];
   maidType =['Cleaner','Cook','Housekeeping','Servent'];
+  isMaid = false;
+  
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder,private memberservice: MemberdetailsService) { }
 
   ngOnInit(): void {
     
     this.registerForm = this.formBuilder.group({
+      role: ['',Validators.required],
+      maidType: ['',Validators.required],
       title: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      address: ['', Validators.required, ],
+      mobile: ['', [Validators.required,Validators.pattern('[0-9]{10}')] ],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       acceptTerms: [false, Validators.requiredTrue]
@@ -31,6 +40,20 @@ export class RegisterComponent implements OnInit {
       validator: mustmatch('password', 'confirmPassword')
   });
   }
+
+  
+  onOptionsSelected(selectedValue:String){
+    if(selectedValue =="Maid")
+    {
+      this.isMaid = true;
+    }else{
+      this.isMaid = false;
+    }
+
+  }
+
+  
+
 
   onSubmit() {
     this.submitted = true;
@@ -47,6 +70,9 @@ export class RegisterComponent implements OnInit {
 
     // display form values on success
     alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value, null, 4));
+    this.memberservice.register(this.registerForm.value).subscribe(
+      data => console.log(data) 
+    , error => console.log(error));
 }
 
 onReset() {
