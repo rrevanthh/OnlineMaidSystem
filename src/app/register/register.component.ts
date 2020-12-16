@@ -1,9 +1,11 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ControlContainer, FormBuilder, FormGroup, Validators } from '@angular/forms'
+import { FormBuilder, FormGroup, Validators } from '@angular/forms'
+import { Router } from '@angular/router';
+import { first } from 'rxjs/operators';
 
 import { mustmatch } from '../helper/mustmatch.validation';
-import { MemberdetailsService } from '../memberdetails.service';
+import { AlertService } from '../service/alert.service'; 
+import { UserdetailsService } from '../service/userdetails.service';
 
 @Component({
   selector: 'app-register',
@@ -18,9 +20,13 @@ export class RegisterComponent implements OnInit {
   rolesList =["Admin",'Maid','Member','Guest'];
   maidType =['Cleaner','Cook','Housekeeping','Servent'];
   isMaid = false;
+  loading = false;
   
-
-  constructor(private formBuilder: FormBuilder,private memberservice: MemberdetailsService) { }
+  constructor(private formBuilder: FormBuilder,
+    private UserdetailsService: UserdetailsService,
+    private router: Router,
+    private alertService: AlertService,
+    ) { }
 
   ngOnInit(): void {
     
@@ -41,7 +47,6 @@ export class RegisterComponent implements OnInit {
       validator: mustmatch('password', 'confirmPassword')
   });
   }
-
   
   onOptionsSelected(selectedValue:String){
     if(selectedValue =="Maid")
@@ -50,30 +55,31 @@ export class RegisterComponent implements OnInit {
     }else{
       this.isMaid = false;
     }
-
   }
 
-  
-
+  get f()
+  { 
+    return this.registerForm.controls;
+  } 
 
   onSubmit() {
     this.submitted = true;
     if (this.registerForm.invalid) {
         return;
-    }
-    
-
-  // convenience getter for easy access to form fields
-    // get f()
-    //  { 
-    // return this.registerForm.controls;
-    //  }  
-
+    }    
+    this.loading = true;
     // display form values on success
    // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value, null, 4));
-    this.memberservice.register(this.registerForm.value).subscribe(
-      data => console.log(data) 
-    , error => console.log(error));
+    this.UserdetailsService.register(this.registerForm.value).pipe(first())
+    .subscribe(
+      data =>{ console.log(data);
+        this.alertService.success('Registration successful', true);
+        this.router.navigate(['/login']);
+       }
+    , error =>{ console.log(error);
+      this.alertService.error(error);
+      this.loading = false;
+    });
 }
 
 onReset() {

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { MemberdetailsService } from '../memberdetails.service';
 import { first } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '../service/alert.service';
+import { UserdetailsService } from '../service/userdetails.service';
+import { AuthenticationService } from '../service/authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -16,14 +17,12 @@ export class LoginComponent implements OnInit {
     loginForm: FormGroup;
     loading = false;
     submitted = false;
-    returnUrl: string;
-    
-  
-  
+    returnUrl: string;  
 
   constructor(private formBuilder: FormBuilder,
-    private memberservice: MemberdetailsService,
-    private router: Router, private alertService: AlertService) { }
+    private router: Router, private alertService: AlertService,
+    private route: ActivatedRoute,
+    private authenticationService :AuthenticationService) { }
 
   ngOnInit(): void {
     
@@ -33,7 +32,7 @@ export class LoginComponent implements OnInit {
   }); 
 
   // get return url from route parameters or default to '/' loginForm.controls.
- // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   onSubmit(){
@@ -42,18 +41,15 @@ export class LoginComponent implements OnInit {
       return
     }
     this.loading=true;
-    this.memberservice.login(this.loginForm)
+    this.authenticationService.login(this.loginForm)
     .pipe(first()).subscribe(
       data =>{
-      if (data.userName!=='')
-      {
-        this.router.navigate(['/']);
-      }else
-      {
-        this.alertService.error("gfser");
+        this.router.navigate([this.returnUrl]);
+    },
+    error => {
+        this.alertService.error(error);
         this.loading = false;
-    }
-  })
+    })
     
 
   }
