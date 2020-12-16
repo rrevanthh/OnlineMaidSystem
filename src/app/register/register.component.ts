@@ -30,6 +30,7 @@ export class RegisterComponent implements OnInit {
       title: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
+      userName: ['',Validators.required],
       email: ['', [Validators.required, Validators.email]],
       address: ['', Validators.required, ],
       mobile: ['', [Validators.required,Validators.pattern('[0-9]{10}')] ],
@@ -69,7 +70,7 @@ export class RegisterComponent implements OnInit {
     //  }  
 
     // display form values on success
-    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value, null, 4));
+   // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value, null, 4));
     this.memberservice.register(this.registerForm.value).subscribe(
       data => console.log(data) 
     , error => console.log(error));

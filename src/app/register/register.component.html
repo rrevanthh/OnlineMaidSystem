@@ -48,6 +48,15 @@
                     </div>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label>User Name</label>
+                <input type="text" formControlName="userName" class="form-control" [ngClass]="{ 'is-invalid': submitted && this.registerForm.controls.userName.errors }" />
+                <div *ngIf="submitted && this.registerForm.controls.userName.errors" class="invalid-feedback">
+                    <div *ngIf="this.registerForm.controls.userName.errors.required">user name is required</div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Email</label>
                 <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && this.registerForm.controls.email.errors }" />

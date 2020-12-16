@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { MemberdetailsService } from '../memberdetails.service';
+import { first } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { AlertService } from '../service/alert.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -12,15 +17,18 @@ export class LoginComponent implements OnInit {
     loading = false;
     submitted = false;
     returnUrl: string;
+    
   
   
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder,
+    private memberservice: MemberdetailsService,
+    private router: Router, private alertService: AlertService) { }
 
   ngOnInit(): void {
     
     this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required],
+      userName: ['', Validators.required],
       password: ['', Validators.required]
   }); 
 
@@ -29,7 +37,25 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(){
+    this.submitted=true;
+    if(this.loginForm.invalid){
+      return
+    }
+    this.loading=true;
+    this.memberservice.login(this.loginForm)
+    .pipe(first()).subscribe(
+      data =>{
+      if (data.userName!=='')
+      {
+        this.router.navigate(['/']);
+      }else
+      {
+        this.alertService.error("gfser");
+        this.loading = false;
+    }
+  })
     
+
   }
 
 }
